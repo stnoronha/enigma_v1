@@ -1,4 +1,4 @@
-from enigmatoolbox.cross_disorder import cross_disorder_effect
+from cross_disorder_copy import cross_disorder_effect
 
 from enigmatoolbox.plotting import plot_cortical, plot_subcortical
 
