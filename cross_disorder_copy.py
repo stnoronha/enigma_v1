@@ -1,12 +1,13 @@
 import numpy as np
 from sklearn.decomposition import PCA
+from scipy.stats import zscore
 
 from enigmatoolbox.datasets.base import load_summary_stats
 
 
-def cross_disorder_effect(disorder='all_disorder', measure=None,
-                          additional_data_cortex=None, additional_name_cortex=None, additional_data_subcortex=None,
-                          additional_name_subcortex=None, ignore=None, include=None, method='pca'):
+def cross_disorder_effect_z(disorder='all_disorder', measure=None,
+                            additional_data_cortex=None, additional_name_cortex=None, additional_data_subcortex=None,
+                            additional_name_subcortex=None, ignore=None, include=None, method='pca'):
     """Cross-disorder effect (authors: @boyongpark, @saratheriver)
 
         Parameters
@@ -102,10 +103,10 @@ def cross_disorder_effect(disorder='all_disorder', measure=None,
         variance = {'cortex': [], 'subcortex': []}
 
         pca = PCA()
-        components['cortex'] = pca.fit_transform(np.transpose(mat_d['cortex']))
+        components['cortex'] = pca.fit_transform(np.transpose(zscore(mat_d['cortex']))) #matrix z scored before
         variance['cortex'] = pca.explained_variance_ratio_
 
-        components['subcortex'] = pca.fit_transform(np.transpose(mat_d['subcortex']))
+        components['subcortex'] = pca.fit_transform(np.transpose(zscore(mat_d['subcortex']))
         variance['subcortex'] = pca.explained_variance_ratio_
 
         return components, variance, names
@@ -117,4 +118,3 @@ def cross_disorder_effect(disorder='all_disorder', measure=None,
         correlation_matrix['subcortex'] = np.corrcoef(mat_d['subcortex'])
 
         return correlation_matrix, names
-
