@@ -3,10 +3,6 @@ import numpy
 from cross_disorder_copy import cross_disorder_effect_z
 import enigmatoolbox.cross_disorder
 
-from pprint import pprint
-from enigmatoolbox.plotting import plot_cortical, plot_subcortical
-
-from enigmatoolbox.utils import parcel_to_surface
 from seaborn import heatmap
 import matplotlib.pyplot as plt
 
@@ -76,13 +72,4 @@ fig.tight_layout()
 
 plt.show()
 
-'''
-# Visualize the first cortical and subcortical components on the surface brains
 
-plot_cortical(parcel_to_surface(components['cortex'][:, 0], 'aparc_fsa5'), color_range=(-0.5, 0.5),
-
-              cmap='RdBu_r', color_bar=True, size=(800, 400))
-
-plot_subcortical(components['subcortex'][:, 0], color_range=(-0.5, 0.5),
-
-                 cmap='RdBu_r', color_bar=True, size=(800, 400))'''
