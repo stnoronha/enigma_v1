@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 from scipy.stats import zscore
 
+
 from enigmatoolbox.datasets.base import load_summary_stats
 
 
@@ -66,6 +67,7 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
                 if not include:
                     if not any(ig in jj for ig in ignore) and any(meas in jj for meas in measure):
                         mat_d['cortex'].append(sum_stats[jj].iloc[:, 2])
+                        
                         names['cortex'].append(ii + ': ' + jj)
 
                 elif include:
@@ -106,7 +108,7 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
         components['cortex'] = pca.fit_transform(np.transpose(zscore(mat_d['cortex']))) #matrix z scored before
         variance['cortex'] = pca.explained_variance_ratio_
 
-        components['subcortex'] = pca.fit_transform(np.transpose(zscore(mat_d['subcortex']))
+        components['subcortex'] = pca.fit_transform(np.transpose(zscore(mat_d['subcortex'])))
         variance['subcortex'] = pca.explained_variance_ratio_
 
         return components, variance, names
