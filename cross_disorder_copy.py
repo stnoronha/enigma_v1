@@ -2,7 +2,6 @@ import numpy as np
 from sklearn.decomposition import PCA
 from scipy.stats import zscore
 
-
 from enigmatoolbox.datasets.base import load_summary_stats
 
 
@@ -114,9 +113,14 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
         return components, variance, names
 
     elif method == 'correlation':
+        # noinspection PyDictCreation
         correlation_matrix = {'cortex': [], 'subcortex': []}
 
         correlation_matrix['cortex'] = np.corrcoef(mat_d['cortex'])
         correlation_matrix['subcortex'] = np.corrcoef(mat_d['subcortex'])
 
         return correlation_matrix, names
+'''
+    elif method == "umap":
+
+        reducer = umap.UMAP()'''
