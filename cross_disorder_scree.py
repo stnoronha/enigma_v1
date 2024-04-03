@@ -1,32 +1,20 @@
-from enigmatoolbox.datasets import load_summary_stats
 from cross_disorder_copy import cross_disorder_effect_z
 import enigmatoolbox.cross_disorder
-import numpy as np
+import umap.plot
 import matplotlib.pyplot as plt
-
-# Load summary statistics for ENIGMA-22q
-
-sum_stats = load_summary_stats('22q')
-
-# Get case-control cortical thickness and surface area tables
-
-CT = sum_stats['CortThick_case_vs_controls']
-
-SA = sum_stats['CortSurf_case_vs_controls']
-
-print(CT.head())
+import numpy as np
 
 # Extract shared disorder effects for Z score
 components, variance, names = enigmatoolbox.cross_disorder.cross_disorder_effect()
 
 components_z, variance_z, names_z = cross_disorder_effect_z()
 
-print((components_z['cortex'][0]))
-
 # Print correlation matrix between original components and zscored components for cortical
 # heatmap(numpy.corrcoef(components['cortex'][0:5], components_z['cortex'][0:5]),annot=True)
 
-# Visualize cortical and subcortical eigenvalues in scree plots
+
+
+# Visualize cortical and srtexubcortical eigenvalues in scree plots
 
 fig, ax = plt.subplots(1, 2, figsize=(14, 6))
 
@@ -80,6 +68,4 @@ for ii, jj in enumerate(components_z):
 
 fig.tight_layout()
 
-#plt.show()
-
-
+# plt.show()

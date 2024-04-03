@@ -18,5 +18,3 @@ plot_subcortical(components_z['subcortex'][:, 0], color_range=(-0.5, 0.5),
                  cmap='RdBu_r', color_bar=True, size=(800, 400))
 
 plt.show()
-
-# Z scored UMAP brain maps

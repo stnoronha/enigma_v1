@@ -1,6 +1,8 @@
 import numpy as np
 from sklearn.decomposition import PCA
 from scipy.stats import zscore
+import umap
+import umap.plot
 
 from enigmatoolbox.datasets.base import load_summary_stats
 
@@ -36,9 +38,12 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
         -------
         components : dict
             Principal components of shared effects in descending order in terms of component variance.
-            Only is method is 'pca'.
+            Only if method is 'pca'.
         variance : dict
-            Variance of components. Only is method is 'pca'.
+            Variance of components. Only if method is 'pca'.
+        map_cor: UMAP fit of cortex data
+        , only if method is 'umap'
+        map_sub: UMAP fit of subcortex data, only if method is 'umap'
         correlation_matrix : dict
             Correlation matrices of for every pair of shared effect maps. Only is method is 'correlation'.
         names : dict
@@ -66,7 +71,7 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
                 if not include:
                     if not any(ig in jj for ig in ignore) and any(meas in jj for meas in measure):
                         mat_d['cortex'].append(sum_stats[jj].iloc[:, 2])
-                        
+
                         names['cortex'].append(ii + ': ' + jj)
 
                 elif include:
@@ -104,7 +109,8 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
         variance = {'cortex': [], 'subcortex': []}
 
         pca = PCA()
-        components['cortex'] = pca.fit_transform(np.transpose(zscore(mat_d['cortex']))) #matrix z scored before
+        components['cortex'] = pca.fit_transform(
+            np.transpose(zscore(mat_d['cortex'])))  # matrix z scored before PCA completed
         variance['cortex'] = pca.explained_variance_ratio_
 
         components['subcortex'] = pca.fit_transform(np.transpose(zscore(mat_d['subcortex'])))
@@ -120,7 +126,10 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
         correlation_matrix['subcortex'] = np.corrcoef(mat_d['subcortex'])
 
         return correlation_matrix, names
-'''
-    elif method == "umap":
 
-        reducer = umap.UMAP()'''
+    elif method == "umap":
+        mapper_cor = umap.UMAP().fit(zscore(mat_d['cortex']))
+        mapper_sub = umap.UMAP().fit(zscore(mat_d['subcortex']))
+        umap_comp = {'cortex': umap.UMAP().fit_transform(mat_d['cortex']),
+                     'subcortex': umap.UMAP().fit_transform(mat_d['subcortex'])}
+        return mapper_cor, mapper_sub, umap_comp, names
