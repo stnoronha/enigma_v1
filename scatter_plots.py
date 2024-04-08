@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 # UMAP
-umap_cor, umap_sub, umap_comp, names = cross_disorder_effect_z(method="umap")
+umap_cor, umap_sub, umap_comp, names = cross_disorder_effect_z(measure='CortThick',method="umap")
 
 
 # Cortex UMAP plot
@@ -13,13 +13,12 @@ corplot.set_title('Cortex')
 #plt.show()
 
 # Subcortex UMAP plot
-umap.plot.points(umap_sub)
 subplot = umap.plot.points(umap_sub)
 subplot.set_title('Subcortex')
 #plt.show()
 
 
-components, variance, names = cross_disorder_effect_z(method='pca')
+components, variance, names = cross_disorder_effect_z(measure = 'CortThick',method='pca')
 
 plt.scatter(components['cortex'][:,0], components['cortex'][:,1])
 plt.title('Cortex Component 1 v Component 2')
