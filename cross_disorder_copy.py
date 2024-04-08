@@ -104,16 +104,19 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
         mat_d['subcortex'] = np.append(mat_d['subcortex'], additional_data_subcortex)
         names['subcortex'] = np.append(names['subcortex'], additional_name_subcortex)
 
+    # Z score before applying dimension reduction
+    mat_d['cortex'] = zscore(mat_d['cortex'])
+    mat_d['subcortex'] = zscore(mat_d['subcortex'])
+
     if method == 'pca':
         components = {'cortex': [], 'subcortex': []}
         variance = {'cortex': [], 'subcortex': []}
 
-        pca = PCA()
-        components['cortex'] = pca.fit_transform(
-            np.transpose(zscore(mat_d['cortex'])))  # matrix z scored before PCA completed
+        pca = PCA(n_components=2)
+        components['cortex'] = pca.fit_transform(np.transpose(mat_d['cortex']))
         variance['cortex'] = pca.explained_variance_ratio_
 
-        components['subcortex'] = pca.fit_transform(np.transpose(zscore(mat_d['subcortex'])))
+        components['subcortex'] = pca.fit_transform(np.transpose(mat_d['subcortex']))
         variance['subcortex'] = pca.explained_variance_ratio_
 
         return components, variance, names
@@ -128,8 +131,8 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
         return correlation_matrix, names
 
     elif method == "umap":
-        mapper_cor = umap.UMAP().fit(zscore(mat_d['cortex']))
-        mapper_sub = umap.UMAP().fit(zscore(mat_d['subcortex']))
-        umap_comp = {'cortex': umap.UMAP().fit_transform(mat_d['cortex']),
-                     'subcortex': umap.UMAP().fit_transform(mat_d['subcortex'])}
+        mapper_cor = umap.UMAP().fit(mat_d['cortex'])
+        mapper_sub = umap.UMAP().fit(mat_d['subcortex'])
+        umap_comp = {'cortex': mapper_cor.embedding_,
+                     'subcortex':mapper_sub.embedding_}
         return mapper_cor, mapper_sub, umap_comp, names
