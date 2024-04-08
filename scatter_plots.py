@@ -10,13 +10,12 @@ umap_cor, umap_sub, umap_comp, names = cross_disorder_effect_z(measure='CortThic
 # Cortex UMAP plot
 corplot = umap.plot.points(umap_cor)
 corplot.set_title('Cortex')
-#plt.show()
+plt.show()
 
 # Subcortex UMAP plot
 subplot = umap.plot.points(umap_sub)
 subplot.set_title('Subcortex')
-#plt.show()
-
+plt.show()
 
 components, variance, names = cross_disorder_effect_z(measure = 'CortThick',method='pca')
 
@@ -32,8 +31,8 @@ plt.xlabel('PC1')
 plt.ylabel('PC2')
 #plt.show()
 
-# PCA vs UMAP components
-plt.scatter(components['cortex'][:50,0], umap_comp['cortex'][:,0])
+# PCA first component vs UMAP first component
+plt.scatter(components['cortex'][:,0], umap_comp['cortex'][:,0])
 plt.title('PCA Components vs UMAP components')
 plt.xlabel('PCA')
 plt.ylabel('UMAP')

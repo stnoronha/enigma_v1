@@ -1,19 +1,19 @@
 from enigmatoolbox.cross_disorder import cross_disorder_effect
-from numpy import corrcoef, sqrt
+from numpy import corrcoef, sqrt, concatenate, newaxis
 from seaborn import heatmap
 import matplotlib.pyplot as plt
+
 
 from cross_disorder_copy import cross_disorder_effect_z
 import enigmatoolbox.cross_disorder
 
 # Extract shared disorder effect PCA
-components_z, variance_z, names_z = cross_disorder_effect_z()
+components_z, variance_z, names_z = cross_disorder_effect_z(measure='CortThick')
 
 #UMAP
-umap_cor, umap_sub, umap_comp, names = cross_disorder_effect_z(method="umap")
+umap_cor, umap_sub, umap_comp, names = cross_disorder_effect_z(measure='CortThick',method="umap")
 
-print()
-heatmap(umap_comp['cortex'][:50,0],umsp)
+heatmap(corrcoef(components_z['cortex'], umap_comp['cortex'][0]))
 plt.title('PCA components vs UMAP components')
 plt.xlabel('PCA components')
 plt.ylabel('UMAP components')
