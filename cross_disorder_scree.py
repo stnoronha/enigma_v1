@@ -7,7 +7,7 @@ import numpy as np
 # Extract shared disorder effects for Z score
 components, variance, names = enigmatoolbox.cross_disorder.cross_disorder_effect()
 
-components_z, variance_z, names_z = cross_disorder_effect_z()
+components_z, variance_z, names_z = cross_disorder_effect_z(measure='CortThick')
 
 # Print correlation matrix between original components and zscored components for cortical
 # heatmap(numpy.corrcoef(components['cortex'][0:5], components_z['cortex'][0:5]),annot=True)
