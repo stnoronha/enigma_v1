@@ -55,7 +55,7 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
         ignore = ['mega']
     if include is None:
         include = []
-    if disorder is 'all_disorder':
+    if disorder == 'all_disorder':
         disorder = ['22q', 'asd', 'bipolar', 'depression', 'epilepsy', 'ocd', 'schizophrenia']
 
     mat_d = {'cortex': [], 'subcortex': []}
@@ -131,8 +131,8 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
         return correlation_matrix, names
 
     elif method == "umap":
-        mapper_cor = umap.UMAP().fit(mat_d['cortex'])
-        mapper_sub = umap.UMAP().fit(mat_d['subcortex'])
+        mapper_cor = umap.UMAP(n_components=2).fit(np.transpose(mat_d['cortex']))
+        mapper_sub = umap.UMAP(n_components=2).fit(np.transpose(mat_d['subcortex']))
         umap_comp = {'cortex': mapper_cor.embedding_,
                      'subcortex':mapper_sub.embedding_}
         return mapper_cor, mapper_sub, umap_comp, names
