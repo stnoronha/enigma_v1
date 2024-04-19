@@ -32,7 +32,7 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
         include : list, optional
             Include only summary statistics with these expressions. Default is empty, i.e., include everything.
         method : string, optional
-            Analysis method {'pca', 'correlation'}. Default is 'pca'.
+            Analysis method {'pca', 'correlation','umap'}. Default is 'pca'.
 
         Returns
         -------
@@ -104,19 +104,19 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
         mat_d['subcortex'] = np.append(mat_d['subcortex'], additional_data_subcortex)
         names['subcortex'] = np.append(names['subcortex'], additional_name_subcortex)
 
-    # Z score before applying dimension reduction
-    mat_d['cortex'] = zscore(mat_d['cortex'])
-    mat_d['subcortex'] = zscore(mat_d['subcortex'])
+    # Z score and transpose before applying dimension reduction
+    mat_d['cortex'] = np.transpose(zscore(mat_d['cortex']))
+    mat_d['subcortex'] = np.transpose(zscore(mat_d['subcortex']))
 
     if method == 'pca':
         components = {'cortex': [], 'subcortex': []}
         variance = {'cortex': [], 'subcortex': []}
 
         pca = PCA(n_components=2)
-        components['cortex'] = pca.fit_transform(np.transpose(mat_d['cortex']))
+        components['cortex'] = pca.fit_transform(mat_d['cortex'])
         variance['cortex'] = pca.explained_variance_ratio_
 
-        components['subcortex'] = pca.fit_transform(np.transpose(mat_d['subcortex']))
+        components['subcortex'] = pca.fit_transform(mat_d['subcortex'])
         variance['subcortex'] = pca.explained_variance_ratio_
 
         return components, variance, names
@@ -125,14 +125,14 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
         # noinspection PyDictCreation
         correlation_matrix = {'cortex': [], 'subcortex': []}
 
-        correlation_matrix['cortex'] = np.corrcoef(mat_d['cortex'])
-        correlation_matrix['subcortex'] = np.corrcoef(mat_d['subcortex'])
+        correlation_matrix['cortex'] = np.corrcoef(np.transpose(mat_d['cortex'])) #transpose back to original axes
+        correlation_matrix['subcortex'] = np.corrcoef(np.transpose(mat_d['subcortex']))
 
         return correlation_matrix, names
 
     elif method == "umap":
-        mapper_cor = umap.UMAP(n_components=2).fit(np.transpose(mat_d['cortex']))
-        mapper_sub = umap.UMAP(n_components=2).fit(np.transpose(mat_d['subcortex']))
+        mapper_cor = umap.UMAP(n_components=5,random_state=42).fit((mat_d['cortex']))
+        mapper_sub = umap.UMAP(n_components=5,random_state=42).fit((mat_d['subcortex']))
         umap_comp = {'cortex': mapper_cor.embedding_,
                      'subcortex':mapper_sub.embedding_}
         return mapper_cor, mapper_sub, umap_comp, names
