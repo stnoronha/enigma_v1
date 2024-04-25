@@ -22,13 +22,6 @@ reglabels = genes['label']
 genes = genes.drop('label', axis=1)
 genelabels = list(genes.columns)
 
-'''
-with open('gene_labels.txt', 'w') as f:
-    for line in genelabels:
-        f.write("%s\n" % line)
-
-print(genelabels[:10])
-'''
 
 def corr_gene_exp(solution):
     if len(solution) == 200:
@@ -85,9 +78,13 @@ gene_umap_neg = max_cor_genes(gene_umap_list,-0.5,0.05)
 
 def store_list(gene_list, name):
     with open(name + str('.txt'), 'w') as f:
-        for line in gene_pca_pos:
+        for line in gene_list:
             f.write("%s\n" % line)
 
 neg_combined = list(set(gene_umap_neg).intersection(gene_pca_neg))
 
-store_list(neg_combined,"significant negative")
+pos_combined = list(set(gene_umap_pos).intersection(gene_pca_pos))
+
+store_list(neg_combined,"significant_negative")
+
+store_list(pos_combined,"significant_positive")
