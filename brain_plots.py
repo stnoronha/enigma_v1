@@ -14,14 +14,14 @@ umap_cor, umap_sub, umap_comp, names = cross_disorder_effect_z(method="umap")
 
 
 # Z scored PCA brain maps
-plot_cortical(parcel_to_surface(components_z['cortex'][:, 0], 'aparc_fsa5'), color_range=(-1, 2),
+plot_cortical(parcel_to_surface(components_z['cortex'][:, 0], 'aparc_fsa5'), color_range=(-5, 6),
 
               cmap='RdBu_r', color_bar=True, size=(800, 400))
 
 plt.show()
 
 
-plot_subcortical(components_z['subcortex'][:, 0], color_range=(-0.5, 0.5),
+plot_subcortical(components_z['subcortex'][:, 0], color_range=(-5, 7),
 
                  cmap='RdBu_r', color_bar=True, size=(800, 400))
 
