@@ -58,7 +58,7 @@ gene_umap_list = [
     {'name':genelabels,'r_gene':r_gene_umap,'p_gene':p_gene_umap}
     for genelabels,r_gene_umap,p_gene_umap in zip(genelabels,r_gene_umap,p_gene_umap)]
 
-# pull out all genes which have meet r and p value thresholds
+# pull out all genes which have met r and p value thresholds
 def max_cor_genes(gene_list, r_thresh, p_thresh):
     if r_thresh >= 0:
         return [gene_list[i]['name'] for i in range(len(gene_list)) 
