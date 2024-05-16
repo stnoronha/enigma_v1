@@ -15,6 +15,9 @@ components_z, variance_z, names_z = cross_disorder_effect_z()
 # UMAP cross disorder effect
 umap_cor, umap_sub, umap_comp, names = cross_disorder_effect_z(method="umap")
 
+# Isomap cross disorder effect
+iso_cor, iso_sub, iso_comp, names = cross_disorder_effect_z(method="isomap")
+
 genes = fetch_ahba()
 reglabels = genes['label']
 
@@ -48,6 +51,7 @@ def corr_gene_exp(solution):
 
 r_gene_pca, p_gene_pca = corr_gene_exp(components_z['cortex'][:,0])
 r_gene_umap, p_gene_umap = corr_gene_exp(umap_comp['cortex'][:,0])
+r_gene_iso, p_gene_iso = corr_gene_exp(iso_comp['cortex'][:,0])
 
 # Create dictionary with gene names and correlations
 gene_pca_list = [
@@ -86,5 +90,4 @@ neg_combined = list(set(gene_umap_neg).intersection(gene_pca_neg))
 pos_combined = list(set(gene_umap_pos).intersection(gene_pca_pos))
 
 store_list(neg_combined,"significant_negative")
-
 store_list(pos_combined,"significant_positive")

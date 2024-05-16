@@ -1,6 +1,8 @@
 import numpy as np
 from sklearn.decomposition import PCA
+from sklearn.manifold import Isomap
 from scipy.stats import zscore
+
 import umap
 import umap.plot
 
@@ -136,3 +138,10 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
         umap_comp = {'cortex': mapper_cor.embedding_,
                      'subcortex':mapper_sub.embedding_}
         return mapper_cor, mapper_sub, umap_comp, names
+
+    elif method == "isomap":
+        mapper_cor = Isomap(n_components=5).fit((mat_d['cortex']))
+        mapper_sub = Isomap(n_components=5).fit((mat_d['subcortex']))
+        iso_comp = {'cortex': mapper_cor.embedding_,
+                     'subcortex':mapper_sub.embedding_}
+        return mapper_cor, mapper_sub, iso_comp, names
