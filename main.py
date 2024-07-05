@@ -1,38 +1,51 @@
-# This is a sample Python script.
+"""
+Outputs significant gene expression analysis 
+"""
+from cross_disorder_copy import cross_disorder_effect_z
+from gene_expression import corr_gene_exp_fdr, max_cor_genes
+from enigmatoolbox.datasets import fetch_ahba
+from enrichr import enrichr
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# Get cross disorder effect values from dimensionality reduction methods
 
+dim_reduction = ['pca','umap']
+components = {x:cross_disorder_effect_z(method=x) for x in dim_reduction}
 
-from enigmatoolbox.datasets import load_summary_stats
+genes = fetch_ahba()
+reglabels = genes['label']
 
+# remove the label column
+genes = genes.drop('label', axis=1)
+genelabels = list(genes.columns)
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+# run gene analysis
+pca_comp = components['pca']
+pca_comp_cor = pca_comp[0]
+print(pca_comp_cor)
+umap_comp = components['umap']
+umap_comp_cor = umap_comp[2]
+print(umap_comp)
+r_gene_pca, p_gene_pca = corr_gene_exp_fdr(pca_comp_cor['cortex'][:,0])
+r_gene_umap, p_gene_umap = corr_gene_exp_fdr(umap_comp_cor['cortex'][:,0])
 
+# Create dictionary with gene names and correlations
+gene_pca_list = [
+    {'name':genelabels,'r_gene':r_gene_pca,'p_gene':p_gene_pca}
+    for genelabels,r_gene_pca,p_gene_pca in zip(genelabels,r_gene_pca,p_gene_pca)]
 
+gene_umap_list = [
+    {'name':genelabels,'r_gene':r_gene_umap,'p_gene':p_gene_umap}
+    for genelabels,r_gene_umap,p_gene_umap in zip(genelabels,r_gene_umap,p_gene_umap)]
 
+gene_pca_pos = max_cor_genes(gene_pca_list,0.5,0.05)
+gene_pca_neg = max_cor_genes(gene_pca_list,-0.5,0.05)
 
-# Get case-control cortical thickness and surface area tables
+gene_umap_pos = max_cor_genes(gene_umap_list,0.5,0.05)
+gene_umap_neg = max_cor_genes(gene_umap_list,-0.5,0.05)
 
-#CT = sum_stats['CortThick_case_vs_controls']
-#SA = sum_stats['CortSurf_case_vs_controls']
+neg_combined = list(set(gene_umap_neg).intersection(gene_pca_neg))
+pos_combined = list(set(gene_umap_pos).intersection(gene_pca_pos))
 
-# Extract Cohen's d values
-
-#CT_d = CT['d_icv']
-#SA_d = SA['d_icv']
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    sum_stats = load_summary_stats('22q')
-    CT = sum_stats['CortThick_case_vs_controls']
-    SA = sum_stats['CortSurf_case_vs_controls']
-
-    # Extract Cohen's d values
-
-    CT_d = CT['d_icv']
-    SA_d = SA['d_icv']
-
-    print(CT_d)
+# enrichr gene analysis
+enrichr(neg_combined,"significant negative genes")
+enrichr(pos_combined,"signficant postive genes")
