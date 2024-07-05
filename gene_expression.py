@@ -6,6 +6,7 @@ from cross_disorder_copy import cross_disorder_effect_z
 import numpy as np
 from enigmatoolbox.utils.parcellation import parcel_to_surface, surface_to_parcel
 from scipy.stats import spearmanr, false_discovery_control
+from enigmatoolbox.permutation_testing import spin_test,shuf_test
 
 # PCA cross disorder effect
 components_z, variance_z, names_z = cross_disorder_effect_z()
@@ -39,7 +40,7 @@ def corr_gene_exp(solution):
     r_gene = [] #R is correlation coefficient
     p_gene = [] #p is probability that correlation exists if null is true
     for i, gene in enumerate(genelabels):
-        geneexp = genes.iloc[0:68,i]
+        geneexp = genes.iloc[0:68,i]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
         # get the location of non-nan values
         idx = ~np.isnan(geneexp)        
         c_gene = spearmanr(d_mri[idx], geneexp[idx])
@@ -73,18 +74,36 @@ def corr_gene_exp_fdr(solution):
     return r_gene, p_gene
 
 
-r_gene_pca, p_gene_pca = corr_gene_exp_fdr(components_z['cortex'][:,0])
-r_gene_umap, p_gene_umap = corr_gene_exp_fdr(umap_comp['cortex'][:,0])
-r_gene_iso, p_gene_iso = corr_gene_exp_fdr(iso_comp['cortex'][:,0])
+def corr_gene_exp_spin(solution):
+# Remove subcortical values corresponding to the ventricles
+# (as we don't have connectivity values for them!)
+    fc_ctx_dc = np.sum(fc_ctx, axis=0)
+    sc_ctx_dc = np.sum(sc_ctx, axis=0)
 
-# Create dictionary with gene names and correlations
-gene_pca_list = [
-    {'name':genelabels,'r_gene':r_gene_pca,'p_gene':p_gene_pca}
-    for genelabels,r_gene_pca,p_gene_pca in zip(genelabels,r_gene_pca,p_gene_pca)]
+    # Map parcellated data to the surface
+    fc_ctx_dc_fsa5 = parcel_to_surface(fc_ctx_dc, 'aparc_fsa5')
 
-gene_umap_list = [
-    {'name':genelabels,'r_gene':r_gene_umap,'p_gene':p_gene_umap}
-    for genelabels,r_gene_umap,p_gene_umap in zip(genelabels,r_gene_umap,p_gene_umap)]
+    sc_ctx_dc_fsa5 = parcel_to_surface(sc_ctx_dc, 'aparc_fsa5')
+    SV_d_noVent = SV_d.drop([np.where(SV['Structure'] == 'LLatVent')[0][0],
+                            np.where(SV['Structure'] == 'RLatVent')[0][0]]).reset_index(drop=True)
+
+    # Spin permutation testing for two cortical maps
+    fc_ctx_p, fc_ctx_d = spin_test(fc_ctx_dc, CT_d, surface_name='fsa5', parcellation_name='aparc',
+                                type='pearson', n_rot=1000, null_dist=True)
+
+    sc_ctx_p, sc_ctx_d = spin_test(sc_ctx_dc, CT_d, surface_name='fsa5', parcellation_name='aparc',
+                                type='pearson', n_rot=1000, null_dist=True)
+
+    # Shuf permutation testing for two subcortical maps
+
+    fc_sctx_p, fc_sctx_d = shuf_test(fc_sctx_dc, SV_d_noVent, n_rot=1000,
+                                    type='pearson', null_dist=True)
+
+    sc_sctx_p, sc_sctx_d = shuf_test(sc_sctx_dc, SV_d_noVent, n_rot=1000,
+                                    type='spearman', null_dist=True)
+    # Store p-values and null distributions
+    p_and_d = {'functional cortical hubs': [fc_ctx_p, fc_ctx_d], 'functional subcortical hubs': [fc_sctx_p, fc_sctx_d],
+            'structural cortical hubs': [sc_ctx_p, sc_ctx_d], 'structural subcortical hubs': [sc_sctx_p, sc_sctx_d]}
 
 # pull out all genes which have met r and p value thresholds
 def max_cor_genes(gene_list, r_thresh, p_thresh):
@@ -96,22 +115,9 @@ def max_cor_genes(gene_list, r_thresh, p_thresh):
                if gene_list[i]['r_gene'] <= r_thresh and gene_list[i]['p_gene'] < p_thresh]
 
 
-gene_pca_pos = max_cor_genes(gene_pca_list,0.5,0.05)
-gene_pca_neg = max_cor_genes(gene_pca_list,-0.5,0.05)
-
-gene_umap_pos = max_cor_genes(gene_umap_list,0.5,0.05)
-gene_umap_neg = max_cor_genes(gene_umap_list,-0.5,0.05)
-
 # Write list into a text file
 
 def store_list(gene_list, name):
     with open(name + str('.txt'), 'w') as f:
         for line in gene_list:
             f.write("%s\n" % line)
-
-neg_combined = list(set(gene_umap_neg).intersection(gene_pca_neg))
-
-pos_combined = list(set(gene_umap_pos).intersection(gene_pca_pos))
-
-store_list(neg_combined,"significant_negative_fdr")
-store_list(pos_combined,"significant_positive_fdr")
