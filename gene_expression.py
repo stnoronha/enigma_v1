@@ -106,13 +106,17 @@ def corr_gene_exp_spin(solution):
             'structural cortical hubs': [sc_ctx_p, sc_ctx_d], 'structural subcortical hubs': [sc_sctx_p, sc_sctx_d]}
 
 # pull out all genes which have met r and p value thresholds
-def max_cor_genes(gene_list, r_thresh, p_thresh):
-    if r_thresh >= 0:
+def max_cor_genes(gene_list, p_thresh,r_thresh=0):
+    if r_thresh > 0:
         return [gene_list[i]['name'] for i in range(len(gene_list)) 
                if gene_list[i]['r_gene'] >= r_thresh and gene_list[i]['p_gene'] < p_thresh]
     if r_thresh < 0:
         return [gene_list[i]['name'] for i in range(len(gene_list)) 
                if gene_list[i]['r_gene'] <= r_thresh and gene_list[i]['p_gene'] < p_thresh]
+    if r_thresh == 0:
+        return [gene_list[i]['name'] for i in range(len(gene_list)) 
+            if gene_list[i]['p_gene'] < p_thresh]
+
 
 
 # Write list into a text file
