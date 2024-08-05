@@ -1,0 +1,8 @@
+adhd {'DPH2', 'DUSP6'}
+asd {'KCNN2'}
+bipolar {'ADCY2', 'TRANK1', 'FSTL5', 'THSD7A'}
+depression {'MICB', 'FNIP2', 'ZMAT2', 'FCF1', 'SPPL3', 'RTN1', 'PRR16', 'USP3', 'CDH13', 'CNTN5', 'TRMT10C', 'SOX5', 'BAD', 'CNTNAP5', 'CTTNBP2'}
+epilepsy set()
+hippocampal_volume set()
+schizophrenia {'DOC2A', 'TRANK1', 'STAT6', 'NT5DC2', 'ADAMTSL3', 'MPHOSPH9', 'PPP1R16B', 'LRP1', 'CNTN4', 'ARL3', 'FUT9', 'ALDOA', 'CNKSR2', 'GRM3', 'ARHGAP1'}
+tourette {'MECR'}
