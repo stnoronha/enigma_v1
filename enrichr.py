@@ -21,9 +21,9 @@ genes_lst = [
 'RTP1'
 ]
 
-def enrichr(gene_lst:list, description = 'Example gene list'):
+def enrichr(gene_list:list, description = 'Example gene list'):
     ENRICHR_URL = 'https://maayanlab.cloud/Enrichr/addList'
-    genes_str = '\n'.join(gene_lst)
+    genes_str = '\n'.join(gene_list)
     payload = {
         'list': (None, genes_str),
         'description': (None, description)
@@ -46,6 +46,6 @@ def enrichr(gene_lst:list, description = 'Example gene list'):
         raise Exception('Error fetching enrichment results')
 
     data = json.loads(response.text)
-    store_list(data,description)
+    return store_list(data,description)
     
 
