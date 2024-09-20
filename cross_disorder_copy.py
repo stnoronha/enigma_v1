@@ -57,7 +57,7 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
         ignore = ['mega']
     if include is None:
         include = []
-    if disorder == 'all_disorder':
+    if disorder is 'all_disorder':
         disorder = ['22q', 'asd', 'bipolar', 'depression', 'epilepsy', 'ocd', 'schizophrenia']
 
     mat_d = {'cortex': [], 'subcortex': []}
@@ -73,7 +73,6 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
                 if not include:
                     if not any(ig in jj for ig in ignore) and any(meas in jj for meas in measure):
                         mat_d['cortex'].append(sum_stats[jj].iloc[:, 2])
-
                         names['cortex'].append(ii + ': ' + jj)
 
                 elif include:
@@ -110,8 +109,8 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
     mat_d['cortex'] = np.transpose(zscore(mat_d['cortex']))
     mat_d['subcortex'] = np.transpose(zscore(mat_d['subcortex']))
     # Replace NaNs with 0
-    mat_d['cortex'][np.isnan((mat_d['cortex']))] = 0
-    mat_d['subcortex'][np.isnan((mat_d['subcortex']))] = 0
+    mat_d['cortex'][np.isnan(mat_d['cortex'])] = 0
+    mat_d['subcortex'][np.isnan(mat_d['subcortex'])] = 0
 
     if method == 'pca':
         components = {'cortex': [], 'subcortex': []}
