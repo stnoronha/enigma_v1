@@ -109,12 +109,15 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
     # Z score and transpose before applying dimension reduction
     mat_d['cortex'] = np.transpose(zscore(mat_d['cortex']))
     mat_d['subcortex'] = np.transpose(zscore(mat_d['subcortex']))
+    # Replace NaNs with 0
+    mat_d['cortex'][np.isnan((mat_d['cortex']))] = 0
+    mat_d['subcortex'][np.isnan((mat_d['subcortex']))] = 0
 
     if method == 'pca':
         components = {'cortex': [], 'subcortex': []}
         variance = {'cortex': [], 'subcortex': []}
 
-        pca = PCA(n_components=2)
+        pca = PCA()
         components['cortex'] = pca.fit_transform(mat_d['cortex'])
         variance['cortex'] = pca.explained_variance_ratio_
 
