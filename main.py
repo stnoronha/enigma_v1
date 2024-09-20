@@ -25,10 +25,17 @@ umap_comp_cor = umap_comp[2]
 r_gene_pca, p_gene_pca = corr_gene_exp_fdr(pca_comp_cor['cortex'][:,0])
 r_gene_umap, p_gene_umap = corr_gene_exp_fdr(umap_comp_cor['cortex'][:,0])
 
+r_gene_pca_sub, p_gene_pca_sub = corr_gene_exp_fdr(pca_comp_cor['subcortex'][:,0])
+r_gene_umap_sub, p_gene_umap_sub = corr_gene_exp_fdr(umap_comp_cor['subcortex'][:,0])
+
 # Create dictionary with gene names and correlations
 gene_pca_list = [
     {'name':genelabels,'r_gene':r_gene_pca,'p_gene':p_gene_pca}
     for genelabels,r_gene_pca,p_gene_pca in zip(genelabels,r_gene_pca,p_gene_pca)]
+
+gene_pca_list_sub = [
+    {'name':genelabels,'r_gene':r_gene_pca_sub,'p_gene':p_gene_pca_sub}
+    for genelabels,r_gene_pca_sub,p_gene_pca_sub in zip(genelabels,r_gene_pca_sub,p_gene_pca_sub)]
 
 gene_umap_list = [
     {'name':genelabels,'r_gene':r_gene_umap,'p_gene':p_gene_umap}
