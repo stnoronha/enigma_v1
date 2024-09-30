@@ -2,13 +2,93 @@
 Venn Diagram codes (using matplotlib-venn)
 """
 from matplotlib_venn import venn2
-from matplotlib.pyplot import show,title  
+from matplotlib.pyplot import show,title,xticks
+import numpy as np
+import pandas as pd
+from seaborn import barplot
 
-umap = 4122
+umap = 5021
 pca = 2236
-both = 1113
+both = 1844
+
 
 venn2(subsets=(umap-both,pca-both,both),set_labels=("UMAP","PCA"))
+
+venn2(subsets=(umap-both,pca-both,both),set_labels=("UMAP","PCA"))
+title("Surviving Genes after Reduction")
+show()
+
+
+umap_up = np.loadtxt("gtex_v8_ts_DEGumap.txt",usecols=(1,3,5),skiprows=1,dtype={'names':('Tissue','# of genes',"adjusted P value"),'formats':('S50','i4',"float64")})[:54]
+pca_up = np.loadtxt("gtex_v8_ts_DEGpca.txt",usecols=(1,3,5),skiprows=1,dtype={'names':('Tissue','# of genes',"adjusted P value"),'formats':('S50','i4',"float64")})[:54]
+
+umap_down = np.loadtxt("gtex_v8_ts_DEGumap.txt",usecols=(1,3,5),skiprows=55,dtype={'names':('Tissue','# of genes',"adjusted P value"),'formats':('S50','i4',"float64")})[:54]
+pca_down = np.loadtxt("gtex_v8_ts_DEGpca.txt",usecols=(1,3,5),skiprows=55,dtype={'names':('Tissue','# of genes',"adjusted P value"),'formats':('S50','i4',"float64")})[:54]
+
+umap_both = np.loadtxt("gtex_v8_ts_DEGumap.txt",usecols=(1,3,5),skiprows=109,dtype={'names':('Tissue','# of genes',"adjusted P value"),'formats':('S50','i4',"float64")})[:54]
+pca_both = np.loadtxt("gtex_v8_ts_DEGpca.txt",usecols=(1,3,5),skiprows=109,dtype={'names':('Tissue','# of genes',"adjusted P value"),'formats':('S50','i4',"float64")})[:54]
+
+
+labels = []
+up_umap = []
+up_pca = []
+d_umap =[]
+d_pca = []
+b_umap = []
+b_pca = []
+
+for i in umap_up:
+    labels.append(i[0])
+    up_umap.append(i[1])
+
+for i in pca_up:
+    up_pca.append(i[1])
+
+for i in pca_down:
+    d_pca.append(i[1])
+
+for i in umap_down:
+    d_umap.append(i[1])
+
+for i in pca_both:
+    b_pca.append(i[1])
+
+for i in umap_both:
+    b_umap.append(i[1])
+
+
+dfpca=pd.DataFrame({'x':labels,'y':up_pca})
+dfumap=pd.DataFrame({'x':labels,'y':up_umap})
+dfpca['Reduction']="PCA"
+dfumap['Reduction']="UMAP"
+res=pd.concat([dfpca,dfumap])
+barplot(x='x',y='y',data=res,hue='Reduction')
+title("Tissue Specifity of Upregulated Genes")
+xticks(rotation=90)
+show()
+
+dfpca=pd.DataFrame({'x':labels,'y':d_pca})
+dfumap=pd.DataFrame({'x':labels,'y':d_umap})
+dfpca['Reduction']="PCA"
+dfumap['Reduction']="UMAP"
+res=pd.concat([dfpca,dfumap])
+barplot(x='x',y='y',data=res,hue='Reduction')
+title("Tissue Specifity of Downregulated Genes")
+xticks(rotation=90)
+show()
+
+dfpca=pd.DataFrame({'x':labels,'y':b_pca})
+dfumap=pd.DataFrame({'x':labels,'y':b_umap})
+dfpca['Reduction']="PCA"
+dfumap['Reduction']="UMAP"
+res=pd.concat([dfpca,dfumap])
+barplot(x='x',y='y',data=res,hue='Reduction')
+title("Tissue Specifity of Two-sided DEGs")
+xticks(rotation=90)
+show()
+
+
+
 
 umap_up =['Adipose_Subcutaneous',
 'Adipose_Visceral_Omentum',
@@ -289,10 +369,8 @@ pca_both=['Adipose_Subcutaneous',
 'Uterus',
 'Whole_Blood']
 
-venn2(subsets=(umap-both,pca-both,both),set_labels=("UMAP","PCA"))
-title("Surviving Genes after Reduction")
-show()
 
+'''
 venn2((set(umap_up), set(pca_up)),set_labels=("UMAP","PCA"))
 title("Tissue Specificity of Upregulated Genes")
 show()
@@ -304,4 +382,4 @@ show()
 venn2((set(umap_both), set(pca_both)),set_labels=("UMAP","PCA"))
 title("Tissue Specificity of Regulated Genes")
 show()
-
+'''
