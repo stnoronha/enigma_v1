@@ -83,8 +83,7 @@ def corr_gene_exp_spin(solution):
     p_values_corrected = multipletests(p_values, alpha=0.05, method='fdr_bh')[1]
     # print how many genes are significant
     return(f'Number of significant genes: {np.sum(p_values_corrected < 0.05)}')
-    return p_values
-
+    
 # pull out all genes which have met r and p value thresholds
 def max_cor_genes(gene_list, p_thresh):
     return [gene_list[i]['name'] for i in range(len(gene_list)) 
