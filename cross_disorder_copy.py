@@ -1,6 +1,5 @@
 import numpy as np
 from sklearn.decomposition import PCA
-from sklearn.manifold import Isomap
 from scipy.stats import zscore
 
 import umap
@@ -106,9 +105,17 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
         names['subcortex'] = np.append(names['subcortex'], additional_name_subcortex)
 
     # Z score and transpose before applying dimension reduction
-    mat_d['cortex'] = np.transpose(zscore(mat_d['cortex']))
-    mat_d['subcortex'] = np.transpose(zscore(mat_d['subcortex']))
-    # Replace NaNs with 0
+    new = list()
+    for i in (mat_d['cortex']):
+        x = zscore(i)
+        new.append(x.copy())
+    new = np.asarray(new)
+    mat_d['cortex']=new
+    mat_d['subcortex']=zscore(mat_d['subcortex'])
+
+    mat_d['cortex'] = np.transpose(mat_d['cortex'])
+    mat_d['subcortex'] = np.transpose(mat_d['subcortex'])
+
     mat_d['cortex'][np.isnan(mat_d['cortex'])] = 0
     mat_d['subcortex'][np.isnan(mat_d['subcortex'])] = 0
 
@@ -128,22 +135,21 @@ def cross_disorder_effect_z(disorder='all_disorder', measure=None,
     elif method == 'correlation':
         # noinspection PyDictCreation
         correlation_matrix = {'cortex': [], 'subcortex': []}
-
         correlation_matrix['cortex'] = np.corrcoef(np.transpose(mat_d['cortex'])) #transpose back to original axes
         correlation_matrix['subcortex'] = np.corrcoef(np.transpose(mat_d['subcortex']))
 
         return correlation_matrix, names
 
     elif method == "umap":
-        mapper_cor = umap.UMAP(n_components=5,random_state=42).fit((mat_d['cortex']))
-        mapper_sub = umap.UMAP(n_components=5,random_state=42).fit((mat_d['subcortex']))
+        mapper_cor = umap.UMAP(n_components=2,random_state=42).fit((mat_d['cortex']))
+        mapper_sub = umap.UMAP(n_components=2,random_state=42).fit((mat_d['subcortex']))
         umap_comp = {'cortex': mapper_cor.embedding_,
                      'subcortex':mapper_sub.embedding_}
         return mapper_cor, mapper_sub, umap_comp, names
 
-    elif method == "isomap":
-        mapper_cor = Isomap(n_components=5).fit((mat_d['cortex']))
-        mapper_sub = Isomap(n_components=5).fit((mat_d['subcortex']))
-        iso_comp = {'cortex': mapper_cor.embedding_,
+    elif method == "umap3":
+        mapper_cor = umap.UMAP(n_components=3,random_state=42).fit((mat_d['cortex']))
+        mapper_sub = umap.UMAP(n_components=3,random_state=42).fit((mat_d['subcortex']))
+        umap_comp = {'cortex': mapper_cor.embedding_,
                      'subcortex':mapper_sub.embedding_}
-        return mapper_cor, mapper_sub, iso_comp, names
+        return mapper_cor, mapper_sub, umap_comp, names 
