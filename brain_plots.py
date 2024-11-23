@@ -25,11 +25,11 @@ range_pca = (max(components_z['cortex'][:, 0])-min(components_z['cortex'][:, 0])
 range_umap = (max(umap_comp['cortex'][:, 0])-min(umap_comp['cortex'][:, 0]))/2.0
 
 
-plot_cortical(parcel_to_surface(components['cortex'][:, 0], 'aparc_fsa5'), color_range=(med_pca1-range_pca1, med_pca1+range_pca1),
+plot_cortical(parcel_to_surface(components['cortex'][:, 0], 'aparc_fsa5'), color_range=(-1.5,1.5),
              cmap='RdBu_r', color_bar=True, size=(800, 400),interactive=False)
 
 # Z scored PCA brain maps for z-scored first component
-plot_cortical(parcel_to_surface(components_z['cortex'][:, 0], 'aparc_fsa5'), color_range=(med_pca-range_pca, med_pca+range_pca),
+plot_cortical(parcel_to_surface(components_z['cortex'][:, 0], 'aparc_fsa5'), color_range=(-6,7),
               cmap='RdBu_r', color_bar=True, size=(800, 400),interactive=False)
 
 
