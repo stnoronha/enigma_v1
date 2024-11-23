@@ -68,4 +68,4 @@ for ii, jj in enumerate(components_z):
 
 fig.tight_layout()
 
-# plt.show()
+plt.show()
