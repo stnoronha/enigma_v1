@@ -7,9 +7,11 @@ import numpy as np
 import pandas as pd
 from seaborn import barplot
 
-umap = 5021
-pca = 2236
-both = 1844
+umap_spin = np.loadtxt('significant.txt',dtype='str')
+pca_spin = np.loadtxt('significantpcs.txt',dtype='str')
+umap = 5762
+pca = 5601
+both = len(set.intersection(set(umap_spin),set(pca_spin)))
 
 
 venn2(subsets=(umap-both,pca-both,both),set_labels=("UMAP","PCA"))
