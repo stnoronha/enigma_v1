@@ -11,9 +11,6 @@ genes = fetch_ahba()
 reglabels = genes['label']
 genelabels = list(genes.columns)
 
-genes = fetch_ahba()
-reglabels = genes['label']
-
 # remove the label column
 genes = genes.drop('label', axis=1)
 genelabels = list(genes.columns)
@@ -70,18 +67,27 @@ def corr_gene_exp_fdr(solution):
     return r_gene, p_gene
 
 
-def corr_gene_exp_spin(solution):
+def corr_gene_exp_spin(solution,name="Significant"):
+    gene_list = []
     d_mri = solution #parcellations as denoted by the first or second component of PCA or UMAP
     p_values = np.zeros(len(genelabels))
+    print(len(genelabels))
     for i in range(len(genelabels)):
         geneexp = genes[genelabels[i]]
         geneexp = geneexp[0:68]
         p_values[i] = spin_test(geneexp, d_mri, surface_name='fsa5', parcellation_name='aparc',
-                        type='spearman', n_rot=1000, null_dist=False)  
+                        type='spearman', n_rot=300, null_dist=False)
+        print(i)
+        if p_values[i]< 0.05:
+            print(genelabels[i])  
     # apply Benjamini-Hochberg correction
-
     p_values_corrected = multipletests(p_values, alpha=0.05, method='fdr_bh')[1]
+    for i in range(len(genelabels)):
+        if p_values_corrected[i] < 0.05:
+            gene_list.append(genelabels[i])
     # print how many genes are significant
+    store_list(gene_list,name=name)
+    print(f'Number of significant genes: {np.sum(p_values_corrected < 0.05)}')
     return(f'Number of significant genes: {np.sum(p_values_corrected < 0.05)}')
     
 # pull out all genes which have met r and p value thresholds
